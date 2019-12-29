@@ -7,15 +7,41 @@
 //
 
 import SwiftUI
+enum Units: String {
+    case Celsius = "Celsius"
+    case Fahrenheit = "Fahrenheit"
+    case Kelvin = "Kelvin"
+}
 
 struct ContentView: View {
+    @State private var temp = ""
+    @State private var from = Units.Celsius.rawValue
+    @State private var units = [Units.Celsius, Units.Fahrenheit, Units.Kelvin]
     var body: some View {
-        Text("Hello, World!")
+        Form {
+            Section {
+                TextField("Value to convert", text: $temp)
+            }
+            Section(header: Text("From")) {
+                Picker("Unit of measurement", selection: $from) {
+                    ForEach(0..<units.count) {
+                        Text(self.units[$0].rawValue)
+                    }
+                }.pickerStyle(SegmentedPickerStyle())
+            }
+            Section(header: Text("To")) {
+                Picker("Unit of measurement", selection: $from) {
+                    ForEach(0..<units.count) {
+                        Text(self.units[$0].rawValue)
+                    }
+                }.pickerStyle(SegmentedPickerStyle())
+            }
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView().previewDevice(PreviewDevice(rawValue: "iPhone 8 Plus")).previewDisplayName("iPhone 8 Plus")
     }
 }
