@@ -23,7 +23,6 @@ struct ContentView: View {
     @State private var temp = ""
     @State private var fromTemp = Units.Celsius
     @State private var toTemp = Units.Fahrenheit
-    let units = [Units.Celsius, Units.Fahrenheit, Units.Kelvin]
     var result: Double {
         let tempD = Double(temp) ?? 0
         switch fromTemp {
