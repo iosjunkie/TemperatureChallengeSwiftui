@@ -7,74 +7,81 @@
 //
 
 import SwiftUI
-enum Units: String {
+enum Units: String, CaseIterable {
     case Celsius = "Celsius"
     case Fahrenheit = "Fahrenheit"
     case Kelvin = "Kelvin"
 }
 
+extension Units: Identifiable {
+    var id: UUID {
+        return UUID()
+    }
+}
+
 struct ContentView: View {
     @State private var temp = ""
-    @State private var from = Units.Celsius.rawValue
-    @State private var to = Units.Fahrenheit.rawValue
-    private let units = [Units.Celsius, Units.Fahrenheit, Units.Kelvin]
-    private var result: Double {
+    @State private var fromTemp = Units.Celsius
+    @State private var toTemp = Units.Fahrenheit
+    let units = [Units.Celsius, Units.Fahrenheit, Units.Kelvin]
+    var result: Double {
         let tempD = Double(temp) ?? 0
-        switch from {
-        case Units.Celsius.rawValue:
-            switch to {
-            case Units.Fahrenheit.rawValue:
+        switch fromTemp {
+        case Units.Celsius:
+            switch toTemp {
+            case Units.Fahrenheit:
                 return Conversions.celsiusToFahrenheit(tempInC: tempD)
-            case Units.Kelvin.rawValue:
+            case Units.Kelvin:
                 return Conversions.CelsiusToKelvin(tempInC: tempD)
             default:
                 return tempD
             }
-        case Units.Fahrenheit.rawValue:
-            switch to {
-            case Units.Celsius.rawValue:
+        case Units.Fahrenheit:
+            switch toTemp {
+            case Units.Celsius:
                 return Conversions.fahrenheitToCelsius(tempInF: tempD)
-            case Units.Kelvin.rawValue:
+            case Units.Kelvin:
                 return Conversions.fahrenheitToKelvin(tempInF:tempD)
             default:
                 return tempD
             }
-        case Units.Kelvin.rawValue:
-            switch to {
-            case Units.Fahrenheit.rawValue:
+        case Units.Kelvin:
+            switch toTemp {
+            case Units.Fahrenheit:
                 return Conversions.KelvinToFahrenheit(tempInK: tempD)
-            case Units.Celsius.rawValue:
+            case Units.Celsius:
                 return Conversions.KelvinToCelsius(tempInK: tempD)
             default:
                 return tempD
             }
-        default:
-            return tempD
         }
     }
     
     var body: some View {
-        Form {
-            Section {
-                TextField("Value to convert", text: $temp)
+        NavigationView {
+            Form {
+                Section {
+                    TextField("Value to convert", text: $temp)
+                }
+                Section(header: Text("From")) {
+                    Picker("Unit of measurement", selection: $fromTemp) {
+                        ForEach(Units.allCases) { unit in
+                            Text(unit.rawValue).tag(unit)
+                        }
+                        }.pickerStyle(SegmentedPickerStyle())
+                }
+                Section(header: Text("To")) {
+                    Picker("Unit of measurement", selection: $toTemp) {
+                        ForEach(Units.allCases) { unit in
+                            Text(unit.rawValue).tag(unit)
+                        }
+                    }.pickerStyle(SegmentedPickerStyle())
+                }
+                Section {
+                    Text("\(result, specifier: "%.2f")")
+                }
             }
-            Section(header: Text("From")) {
-                Picker("Unit of measurement", selection: $from) {
-                    ForEach(0 ..< units.count) {
-                        Text(self.units[$0].rawValue)
-                    }
-                }.pickerStyle(SegmentedPickerStyle())
-            }
-            Section(header: Text("To")) {
-                Picker("Unit of measurement", selection: $to) {
-                    ForEach(0 ..< units.count) {
-                        Text(self.units[$0].rawValue)
-                    }
-                }.pickerStyle(SegmentedPickerStyle())
-            }
-            Section {
-                Text("\(result)")
-            }
+            .navigationBarTitle("Temperature Conversion", displayMode: .inline)
         }
     }
 }
