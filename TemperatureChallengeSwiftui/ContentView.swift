@@ -21,8 +21,8 @@ extension Units: Identifiable {
 
 struct ContentView: View {
     @State private var temp = ""
-    @State private var fromTemp = Units.Celsius
-    @State private var toTemp = Units.Fahrenheit
+    @State private var fromTemp = Units.allCases.randomElement()!
+    @State private var toTemp = Units.allCases.randomElement()!
     var result: Double {
         let tempD = Double(temp) ?? 0
         switch fromTemp {
